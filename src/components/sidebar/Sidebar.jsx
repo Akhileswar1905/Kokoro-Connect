@@ -71,30 +71,20 @@ const Sidebar = () => {
     setSearch("");
   };
 
-  // Search Function
   useEffect(() => {
     const handleSearch = async () => {
-      if (search.trim() === "") {
+      if (!search) {
         setSearchChat([]);
         return;
       }
-      const userRef = collection(db, "users");
-      const filteredQuery = query(
-        userRef,
+      const q = query(
+        collection(db, "users"),
         where("displayName", ">=", search),
         where("displayName", "<=", search + "\uf8ff")
       );
 
-      try {
-        const querySnapshot = await getDocs(filteredQuery);
-        const results = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setSearchChat(results);
-      } catch (error) {
-        console.error("Error searching users: ", error);
-      }
+      const res = await getDocs(q);
+      setSearchChat(res.docs.map((doc) => doc.data()));
     };
     handleSearch();
   }, [search]);
@@ -126,7 +116,7 @@ const Sidebar = () => {
     console.log(chat);
     dispatch({
       type: "SET_CHAT",
-      payload: chat,
+      payload: chat.userInfo,
     });
   };
 
@@ -168,7 +158,7 @@ const Sidebar = () => {
             <div
               className={styles.item}
               key={chatId}
-              onClick={() => handleSelect(chatData.userInfo)}
+              onClick={() => handleSelect(chatData)}
             >
               <img
                 src={chatData.userInfo.photoURL || "/profile.png"}
@@ -179,6 +169,14 @@ const Sidebar = () => {
               />
               <div>
                 <h4>{chatData.userInfo.displayName}</h4>
+                <small>
+                  {chatData.lastMessage?.sender === currentUser.uid ? (
+                    <span>You: </span>
+                  ) : (
+                    ""
+                  )}
+                  {chatData.lastMessage?.text}
+                </small>
               </div>
             </div>
           ))}

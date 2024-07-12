@@ -4,6 +4,7 @@ import {
   arrayUnion,
   doc,
   onSnapshot,
+  serverTimestamp,
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
@@ -27,20 +28,27 @@ const Chat = () => {
   const handleSend = async (e) => {
     e.preventDefault();
 
+    let msgContent = text;
+    let imgContent = img;
+    let fileContent = file;
     let imgUrl = null;
     let fileUrl = null;
 
-    if (img) {
-      imgUrl = await uploadFile(img);
+    setText("");
+    setImg(null);
+    setFile(null);
+
+    if (imgContent) {
+      imgUrl = await uploadFile(imgContent);
     }
 
-    if (file) {
-      fileUrl = await uploadFile(file);
+    if (fileContent) {
+      fileUrl = await uploadFile(fileContent);
     }
 
     const msg = {
       id: uuid(),
-      text: text,
+      text: msgContent,
       senderId: currentUser.uid,
       timestamp: Timestamp.now(),
       ...(imgUrl && { imgUrl: imgUrl }),
@@ -51,9 +59,20 @@ const Chat = () => {
       messages: arrayUnion(msg),
     });
 
-    setText("");
-    setImg(null);
-    setFile(null);
+    await updateDoc(doc(db, "userChats", currentUser.uid), {
+      [data.chatId + ".lastMessage"]: {
+        text,
+        sender: currentUser.uid,
+      },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
+    await updateDoc(doc(db, "userChats", data.user.uid), {
+      [data.chatId + ".lastMessage"]: {
+        text,
+        sender: currentUser.uid,
+      },
+      [data.chatId + ".date"]: serverTimestamp(),
+    });
   };
 
   useEffect(() => {
@@ -85,6 +104,7 @@ const Chat = () => {
               alt="profile"
               width={32}
               height={32}
+              style={{ borderRadius: "50%" }}
             />
           </header>
 
@@ -105,15 +125,49 @@ const Chat = () => {
                       msg.senderId === currentUser.uid ? styles.sender : ""
                     }`}
                   >
-                    <img src={msg.imgUrl} alt="img" width={100} />
+                    <img src={msg.imgUrl} alt="img" width={400} />
                   </div>
                 )}
                 {msg.fileUrl && <a href={msg.fileUrl}>File</a>}
+                {/* Time Sent Or Received */}
+                <span
+                  className={`${styles.time}`}
+                  style={{
+                    color: msg.senderId === currentUser.uid ? "white" : "black",
+                    alignSelf:
+                      msg.senderId === currentUser.uid
+                        ? "flex-end"
+                        : "flex-start",
+                  }}
+                >
+                  {msg.timestamp?.toDate().toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
             ))}
           </main>
 
           {/* Footer */}
+          {/* Preview */}
+          {img && (
+            <div className={styles.preview}>
+              <img
+                src={URL.createObjectURL(img)}
+                alt="preview"
+                style={{ width: "500px" }}
+              />
+            </div>
+          )}
+
+          {/* Preview for File */}
+          {file && (
+            <div className={styles.preview}>
+              <img src="/folder.png" alt="" />
+              <p>{file.name}</p>
+            </div>
+          )}
           <div className={styles.footer}>
             <form onSubmit={handleSend}>
               <input
