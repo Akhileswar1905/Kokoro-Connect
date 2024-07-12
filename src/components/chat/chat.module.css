@@ -45,6 +45,7 @@
   border-radius: 10px;
   background-color: #fff;
   margin: 10px;
+  max-width: 500px;
 }
 
 .imgMsg {
@@ -55,12 +56,14 @@
   border-radius: 10px;
   background-color: #fff;
   margin: 10px;
+  max-width: 500px;
 }
 
 .sender {
   background-color: #0c6997;
   color: #fff;
   align-self: flex-end;
+  max-width: 500px;
 }
 
 .footer > form {
