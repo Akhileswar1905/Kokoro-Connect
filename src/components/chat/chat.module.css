@@ -1,0 +1,101 @@
+.container {
+  height: 100%;
+  flex: 2;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f0f0f0;
+}
+
+.wrapper > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ddd;
+  padding: 15px;
+  height: 55px;
+}
+
+.wrapper > header > img {
+  cursor: pointer;
+}
+
+.wrapper > header > span {
+  font-size: 20px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.message {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  margin: 10px;
+}
+
+.imgMsg {
+  display: flex;
+  width: max-content;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  margin: 10px;
+}
+
+.sender {
+  background-color: #0c6997;
+  color: #fff;
+  align-self: flex-end;
+}
+
+.footer > form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.footer > form > img {
+  cursor: pointer;
+}
+
+.footer > form > input {
+  flex: 8;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  outline: none;
+}
+
+.footer > form > button {
+  flex: 1;
+  margin: 10px;
+}
+
+.emptyChat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 20px;
+  background-color: #0c6997;
+  color: #000;
+  border-left: 1px solid #084563;
+}

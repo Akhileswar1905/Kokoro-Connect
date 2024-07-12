@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  height: 95%;
+  border-radius: 10px;
+  background-color: #ddd;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
