@@ -182,7 +182,7 @@ const Chat = () => {
               <input
                 type="file"
                 id="images"
-                accept=".jpg,.png,.svg"
+                accept=".jpg,.png,.svg, .gif"
                 onChange={(e) => setImg(e.target.files[0])}
               />
               <label htmlFor="files">
