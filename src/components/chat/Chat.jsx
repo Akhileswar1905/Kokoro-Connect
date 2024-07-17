@@ -23,10 +23,12 @@ const Chat = () => {
   const [img, setImg] = useState(null);
   const [file, setFile] = useState(null);
 
-  const lastMessageRef = useRef(null); // Ref for the last message element
+  const lastMessageRef = useRef(null);
 
   const handleSend = async (e) => {
     e.preventDefault();
+
+    if (text === "" && img === null && file === null) return;
 
     let msgContent = text;
     let imgContent = img;
@@ -51,8 +53,8 @@ const Chat = () => {
       text: msgContent,
       senderId: currentUser.uid,
       timestamp: Timestamp.now(),
-      ...(imgUrl && { imgUrl: imgUrl }),
-      ...(fileUrl && { fileUrl: fileUrl }),
+      ...(imgUrl && { imgUrl }),
+      ...(fileUrl && { fileUrl }),
     };
 
     await updateDoc(doc(db, "chats", data.chatId), {
@@ -61,14 +63,15 @@ const Chat = () => {
 
     await updateDoc(doc(db, "userChats", currentUser.uid), {
       [data.chatId + ".lastMessage"]: {
-        text,
+        text: msgContent,
         sender: currentUser.uid,
       },
       [data.chatId + ".date"]: serverTimestamp(),
     });
+
     await updateDoc(doc(db, "userChats", data.user.uid), {
       [data.chatId + ".lastMessage"]: {
-        text,
+        text: msgContent,
         sender: currentUser.uid,
       },
       [data.chatId + ".date"]: serverTimestamp(),
@@ -113,7 +116,7 @@ const Chat = () => {
             {msgs.map((msg, index) => (
               <div
                 key={msg.id}
-                ref={index === msgs.length - 1 ? lastMessageRef : null} // Set ref for the last message
+                ref={index === msgs.length - 1 ? lastMessageRef : null}
                 className={`${styles.message} ${
                   msg.senderId === currentUser.uid ? styles.sender : ""
                 }`}
@@ -128,8 +131,28 @@ const Chat = () => {
                     <img src={msg.imgUrl} alt="img" width={400} />
                   </div>
                 )}
-                {msg.fileUrl && <a href={msg.fileUrl}>File</a>}
-                {/* Time Sent Or Received */}
+                {msg.fileUrl &&
+                  (msg.fileUrl.includes(".mp4") ||
+                  msg.fileUrl.includes(".gif") ? (
+                    <div
+                      className={`${styles.fileMsg} ${
+                        msg.senderId === currentUser.uid ? styles.sender : ""
+                      }`}
+                    >
+                      <video src={msg.fileUrl} width={400} autoPlay loop />
+                    </div>
+                  ) : (
+                    <div
+                      className={`${styles.fileMsg} ${
+                        msg.senderId === currentUser.uid ? styles.sender : ""
+                      }`}
+                    >
+                      <img src="/folder.png" alt="file" />
+                      <a href={msg.fileUrl} target="_blank" rel="noreferrer">
+                        {msg.fileUrl.split("/").pop()}
+                      </a>
+                    </div>
+                  ))}
                 <span
                   className={`${styles.time}`}
                   style={{
@@ -145,6 +168,15 @@ const Chat = () => {
                     minute: "2-digit",
                   })}
                 </span>
+                {/* <span
+                  className={styles.reaction}
+                  style={{
+                    left: msg.senderId === currentUser.uid ? 0 : "",
+                    right: msg.senderId !== currentUser.uid ? 0 : "",
+                  }}
+                >
+                  🤎
+                </span> */}
               </div>
             ))}
           </main>
@@ -173,6 +205,7 @@ const Chat = () => {
               <input
                 type="text"
                 placeholder="Type a message..."
+                autoFocus
                 value={text}
                 onChange={(e) => setText(e.target.value)}
               />

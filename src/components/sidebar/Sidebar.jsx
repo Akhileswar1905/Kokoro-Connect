@@ -113,7 +113,6 @@ const Sidebar = () => {
   }
   // Selecting a chat
   const handleSelect = (chat) => {
-    console.log(chat);
     dispatch({
       type: "SET_CHAT",
       payload: chat.userInfo,
@@ -175,7 +174,7 @@ const Sidebar = () => {
                   ) : (
                     ""
                   )}
-                  {chatData.lastMessage?.text}
+                  {chatData.lastMessage?.text.substr(0, 20) + "..."}
                 </small>
               </div>
             </div>

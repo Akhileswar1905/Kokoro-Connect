@@ -1,6 +1,8 @@
 .container {
   height: 100%;
   flex: 2;
+  overflow: hidden;
+  resize: horizontal;
 }
 
 .wrapper {
@@ -50,6 +52,7 @@
   margin: 10px;
   max-width: 500px;
   box-shadow: 0 0 1px #000000;
+  position: relative;
 }
 
 .imgMsg {
@@ -120,4 +123,14 @@
   font-size: 8px;
   color: #000;
   /* align-self: flex-end; */
+}
+
+.reaction {
+  position: absolute;
+  bottom: -5%;
+  text-align: center;
+  /* left: 0; */
+  padding: 2px;
+  background-color: #f0f0f0;
+  border-radius: 50%;
 }
