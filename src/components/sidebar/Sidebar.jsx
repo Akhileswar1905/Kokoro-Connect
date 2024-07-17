@@ -160,14 +160,14 @@ const Sidebar = () => {
               onClick={() => handleSelect(chatData)}
             >
               <img
-                src={chatData.userInfo.photoURL || "/profile.png"}
+                src={chatData.userInfo?.photoURL || "/profile.png"}
                 alt="profile"
                 width={32}
                 height={32}
                 style={{ borderRadius: "50%" }}
               />
               <div>
-                <h4>{chatData.userInfo.displayName}</h4>
+                <h4>{chatData.userInfo?.displayName}</h4>
                 <small>
                   {chatData.lastMessage?.sender === currentUser.uid ? (
                     <span>You: </span>
