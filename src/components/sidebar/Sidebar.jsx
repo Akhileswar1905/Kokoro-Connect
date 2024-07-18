@@ -45,8 +45,8 @@ const Sidebar = () => {
         await updateDoc(doc(db, "userChats", currentUser.uid), {
           [`${combinedId}.userInfo`]: {
             uid: user.uid,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
+            displayName: user?.displayName,
+            photoURL: user?.photoURL,
           },
           [`${combinedId}.date`]: serverTimestamp(),
         });
@@ -54,15 +54,15 @@ const Sidebar = () => {
         await updateDoc(doc(db, "userChats", user.uid), {
           [`${combinedId}.userInfo`]: {
             uid: currentUser.uid,
-            displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL,
+            displayName: currentUser?.displayName,
+            photoURL: currentUser?.photoURL,
           },
           [`${combinedId}.date`]: serverTimestamp(),
         });
         handleSelect({
           uid: user.uid,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
+          displayName: user?.displayName,
+          photoURL: user?.photoURL,
         });
       }
     } catch (error) {
@@ -123,7 +123,7 @@ const Sidebar = () => {
     <div className={styles.container}>
       <div className={styles.wrapper}>
         <header>
-          <span>{currentUser.displayName}'s Chats</span>
+          <span>{currentUser?.displayName}'s Chats</span>
         </header>
         <div className={styles.search}>
           <input
@@ -140,14 +140,14 @@ const Sidebar = () => {
               onClick={() => handleClick(chat)}
             >
               <img
-                src={chat.photoURL || "/profile.png"}
+                src={chat?.photoURL || "/profile.png"}
                 alt="profile"
                 width={32}
                 height={32}
                 style={{ borderRadius: "50%" }}
               />
               <div>
-                <h4>{chat.displayName}</h4>
+                <h4>{chat?.displayName}</h4>
               </div>
             </div>
           ))}
@@ -160,14 +160,14 @@ const Sidebar = () => {
               onClick={() => handleSelect(chatData)}
             >
               <img
-                src={chatData.userInfo.photoURL || "/profile.png"}
+                src={chatData.userInfo?.photoURL || "/profile.png"}
                 alt="profile"
                 width={32}
                 height={32}
                 style={{ borderRadius: "50%" }}
               />
               <div>
-                <h4>{chatData.userInfo.displayName}</h4>
+                <h4>{chatData.userInfo?.displayName}</h4>
                 <small>
                   {chatData.lastMessage?.sender === currentUser.uid ? (
                     <span>You: </span>
