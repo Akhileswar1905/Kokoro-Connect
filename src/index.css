@@ -1,3 +1,13 @@
+:root {
+  --primary-bg: #1a1a1a;
+  --secondary-bg: #252525;
+  --primary-text: #ffffff;
+  --secondary-text: #ddd;
+  --accent-color: #00aaff;
+  --border-color: #333333;
+  --hover-active: #ccc;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -5,6 +15,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--secondary-bg);
 }
 
 code {
@@ -16,4 +27,5 @@ code {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  color: var(--primary-text) !important;
 }

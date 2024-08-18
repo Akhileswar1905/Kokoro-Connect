@@ -1,6 +1,6 @@
 .container {
   flex: 0.75;
-  background-color: #0c6997;
+  background-color: var(--secondary-bg);
   height: 100%;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: hsl(200, 85%, 28%);
+  background-color: var(--secondary-bg);
   padding: 15px;
   height: 55px;
 }
@@ -64,8 +64,8 @@
   padding: 10px;
   margin: 2px 0;
   border-radius: 5px;
-  border: 1px solid #0c6997;
-  background-color: #0c6997;
+  border: 1px solid var(--border-color);
+  background-color: var(--border-color);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 1px 3px;
   color: #fff;
   cursor: pointer;
@@ -93,4 +93,8 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+.time {
+  color: var(--primay-text);
 }
