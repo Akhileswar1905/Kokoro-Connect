@@ -29,3 +29,7 @@ code {
   box-sizing: border-box;
   color: var(--primary-text) !important;
 }
+
+input {
+  background-color: var(--border-color);
+}
