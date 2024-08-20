@@ -13,8 +13,14 @@ import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { uploadFile } from "../../lib/utils";
 import { v4 as uuid } from "uuid";
+import { RiEmojiStickerLine } from "react-icons/ri";
+import EmojiPicker from "emoji-picker-react";
+import TimeStamp from "../TimeStamp/TimeStamp";
 
 const Chat = () => {
+  const emojiRef = useRef(null);
+
+  const [emojiPicker, setEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState([]);
   const { data } = useContext(ChatContext);
   const { currentUser } = useContext(AuthContext);
@@ -25,14 +31,27 @@ const Chat = () => {
 
   const lastMessageRef = useRef(null);
 
+  const addEmoji = (e) => {
+    let emoji = e.emoji;
+    setText((prevText) => prevText + emoji);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (emojiRef.current && !emojiRef.current.contains(e.target)) {
+        setEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   const handleSend = async (e) => {
     e.preventDefault();
 
     if (text === "" && img === null && file === null) return;
 
     let msgContent = text;
-    let imgContent = img;
-    let fileContent = file;
     let imgUrl = null;
     let fileUrl = null;
 
@@ -40,49 +59,51 @@ const Chat = () => {
     setImg(null);
     setFile(null);
 
-    if (imgContent) {
-      imgUrl = await uploadFile(imgContent);
-    }
+    try {
+      if (img) {
+        imgUrl = await uploadFile(img);
+      }
 
-    if (fileContent) {
-      fileUrl = await uploadFile(fileContent);
-    }
+      if (file) {
+        fileUrl = await uploadFile(file);
+      }
 
-    const msg = {
-      id: uuid(),
-      text: msgContent,
-      senderId: currentUser.uid,
-      timestamp: Timestamp.now(),
-      ...(imgUrl && { imgUrl }),
-      ...(fileUrl && { fileUrl }),
-    };
-
-    await updateDoc(doc(db, "chats", data.chatId), {
-      messages: arrayUnion(msg),
-    });
-
-    await updateDoc(doc(db, "userChats", currentUser.uid), {
-      [data.chatId + ".lastMessage"]: {
+      const msg = {
+        id: uuid(),
         text: msgContent,
-        sender: currentUser.uid,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
+        senderId: currentUser.uid,
+        timestamp: Timestamp.now(),
+        ...(imgUrl && { imgUrl }),
+        ...(fileUrl && { fileUrl }),
+      };
 
-    await updateDoc(doc(db, "userChats", data.user.uid), {
-      [data.chatId + ".lastMessage"]: {
-        text: msgContent,
-        sender: currentUser.uid,
-      },
-      [data.chatId + ".date"]: serverTimestamp(),
-    });
+      await updateDoc(doc(db, "chats", data.chatId), {
+        messages: arrayUnion(msg),
+      });
+
+      const updateData = {
+        [data.chatId + ".lastMessage"]: {
+          text: msgContent,
+          sender: currentUser.uid,
+        },
+        [data.chatId + ".date"]: serverTimestamp(),
+      };
+
+      await updateDoc(doc(db, "userChats", currentUser.uid), updateData);
+      await updateDoc(doc(db, "userChats", data.user.uid), updateData);
+    } catch (error) {
+      console.error("Error sending message: ", error);
+    }
   };
 
   useEffect(() => {
-    const onSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
-      doc.exists() && setMsgs(doc.data().messages);
+    const unsub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
+      if (doc.exists()) {
+        setMsgs(doc.data().messages);
+      }
     });
-    return () => onSub();
+
+    return () => unsub();
   }, [data.chatId]);
 
   useEffect(() => {
@@ -93,13 +114,9 @@ const Chat = () => {
 
   return (
     <div className={styles.container}>
-      {data.chatId === "null" ? (
-        <div className={styles.emptyChat}>
-          <h3>Start a conversation</h3>
-        </div>
-      ) : (
+      {
         <div className={styles.wrapper}>
-          {/* header */}
+          {/* Header */}
           <header>
             <span>{data.user?.displayName}</span>
             <img
@@ -125,64 +142,41 @@ const Chat = () => {
                 {msg.imgUrl && (
                   <div
                     className={`${styles.imgMsg} ${
+                      msg.senderId === currentUser.uid
+                        ? styles.senderImg
+                        : styles.Img
+                    }`}
+                  >
+                    <img src={msg.imgUrl} alt="img" />
+                  </div>
+                )}
+                {msg.fileUrl && (
+                  <div
+                    className={`${styles.fileMsg} ${
                       msg.senderId === currentUser.uid ? styles.sender : ""
                     }`}
                   >
-                    <img src={msg.imgUrl} alt="img" width={400} />
+                    {msg.fileUrl.includes(".mp4") ||
+                    msg.fileUrl.includes(".gif") ? (
+                      <video src={msg.fileUrl} autoPlay loop />
+                    ) : (
+                      <>
+                        <img src="/folder.png" alt="file" />
+                        <a href={msg.fileUrl} target="_blank" rel="noreferrer">
+                          {msg.fileUrl.split("/").pop()}
+                        </a>
+                      </>
+                    )}
+                    <TimeStamp msg={msg} currentUser={currentUser} />
                   </div>
                 )}
-                {msg.fileUrl &&
-                  (msg.fileUrl.includes(".mp4") ||
-                  msg.fileUrl.includes(".gif") ? (
-                    <div
-                      className={`${styles.fileMsg} ${
-                        msg.senderId === currentUser.uid ? styles.sender : ""
-                      }`}
-                    >
-                      <video src={msg.fileUrl} width={400} autoPlay loop />
-                    </div>
-                  ) : (
-                    <div
-                      className={`${styles.fileMsg} ${
-                        msg.senderId === currentUser.uid ? styles.sender : ""
-                      }`}
-                    >
-                      <img src="/folder.png" alt="file" />
-                      <a href={msg.fileUrl} target="_blank" rel="noreferrer">
-                        {msg.fileUrl.split("/").pop()}
-                      </a>
-                    </div>
-                  ))}
-                <span
-                  className={`${styles.time}`}
-                  style={{
-                    color: msg.senderId === currentUser.uid ? "white" : "black",
-                    alignSelf:
-                      msg.senderId === currentUser.uid
-                        ? "flex-end"
-                        : "flex-start",
-                  }}
-                >
-                  {msg.timestamp?.toDate().toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {/* <span
-                  className={styles.reaction}
-                  style={{
-                    left: msg.senderId === currentUser.uid ? 0 : "",
-                    right: msg.senderId !== currentUser.uid ? 0 : "",
-                  }}
-                >
-                  🤎
-                </span> */}
+                <TimeStamp msg={msg} currentUser={currentUser} />
               </div>
-            ))}
+            ))}{" "}
+            {""}
           </main>
 
           {/* Footer */}
-          {/* Preview */}
           {img && (
             <div className={styles.preview}>
               <img
@@ -193,7 +187,6 @@ const Chat = () => {
             </div>
           )}
 
-          {/* Preview for File */}
           {file && (
             <div className={styles.preview}>
               <img src="/folder.png" alt="" />
@@ -201,7 +194,25 @@ const Chat = () => {
             </div>
           )}
           <div className={styles.footer}>
+            {emojiPicker && (
+              <div className={styles.emojiPicker}>
+                <EmojiPicker
+                  theme="dark"
+                  width={400}
+                  height={400}
+                  onEmojiClick={addEmoji}
+                />
+              </div>
+            )}
             <form onSubmit={handleSend}>
+              <RiEmojiStickerLine
+                width={20}
+                height={20}
+                onClick={() => setEmojiPicker((prev) => !prev)}
+                style={{
+                  cursor: "pointer",
+                }}
+              />
               <input
                 type="text"
                 placeholder="Type a message..."
@@ -227,11 +238,11 @@ const Chat = () => {
                 accept="*"
                 onChange={(e) => setFile(e.target.files[0])}
               />
-              <button>Send</button>
+              <button type="submit">Send</button>
             </form>
           </div>
         </div>
-      )}
+      }
     </div>
   );
 };

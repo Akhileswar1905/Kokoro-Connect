@@ -98,3 +98,10 @@
 .time {
   color: var(--primay-text);
 }
+
+@media (max-width: 500px) {
+  .container {
+    width: 100vw;
+    flex: 2;
+  }
+}

@@ -44,6 +44,7 @@
   display: flex;
   width: max-content;
   align-items: center;
+  justify-content: center;
   flex-direction: column;
   gap: 10px;
   padding: 10px;
@@ -58,9 +59,14 @@
 .imgMsg {
   display: flex;
   width: max-content;
+  align-items: center;
   padding: 10px;
   border-radius: 10px;
   max-width: 500px;
+}
+
+.imgMsg > img {
+  max-width: 100%;
 }
 
 .sender {
@@ -68,6 +74,22 @@
   color: var(--primary-text);
   align-self: flex-end;
   max-width: 500px;
+}
+
+.senderImg {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.Img {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.footer {
+  position: relative;
 }
 
 .footer > form {
@@ -81,6 +103,8 @@
 
 .footer > form > img {
   cursor: pointer;
+  width: 30px;
+  height: 30px;
 }
 
 .footer > form > input {
@@ -95,17 +119,6 @@
 .footer > form > button {
   flex: 1;
   margin: 10px;
-}
-
-.emptyChat {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 20px;
-  background-color: var(--border-color);
-  color: #000;
-  border-left: 1px solid var(--border-color);
 }
 
 .preview {
@@ -132,4 +145,30 @@
   padding: 2px;
   background-color: var(--primary-bg);
   border-radius: 50%;
+}
+
+.emojiPicker {
+  width: 300px;
+}
+
+@media (max-width: 500px) {
+  .container {
+    flex: 100%;
+  }
+
+  .message,
+  .sender,
+  .imgMsg {
+    max-width: 75vw;
+  }
+
+  .imgMsg {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .imgMsg > img {
+    max-width: 100%;
+  }
 }
