@@ -172,6 +172,10 @@
   }
 
   .message,
+  .sender {
+    font-size: 14px;
+  }
+  .message,
   .sender,
   .imgMsg {
     max-width: 75vw;
