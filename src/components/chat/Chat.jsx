@@ -13,15 +13,10 @@ import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { uploadFile } from "../../lib/utils";
 import { v4 as uuid } from "uuid";
-import { RiEmojiStickerLine } from "react-icons/ri";
-import EmojiPicker from "emoji-picker-react";
 import TimeStamp from "../TimeStamp/TimeStamp";
 import { IoMdSend } from "react-icons/io";
 
 const Chat = () => {
-  const emojiRef = useRef(null);
-
-  const [emojiPicker, setEmojiPicker] = useState(false);
   const [msgs, setMsgs] = useState([]);
   const { data } = useContext(ChatContext);
   const { currentUser } = useContext(AuthContext);
@@ -31,21 +26,6 @@ const Chat = () => {
   const [file, setFile] = useState(null);
 
   const lastMessageRef = useRef(null);
-
-  const addEmoji = (e) => {
-    let emoji = e.emoji;
-    setText((prevText) => prevText + emoji);
-  };
-
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (emojiRef.current && !emojiRef.current.contains(e.target)) {
-        setEmojiPicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -195,25 +175,7 @@ const Chat = () => {
             </div>
           )}
           <div className={styles.footer}>
-            {emojiPicker && (
-              <div className={styles.emojiPicker}>
-                <EmojiPicker
-                  theme="dark"
-                  width={400}
-                  height={400}
-                  onEmojiClick={addEmoji}
-                />
-              </div>
-            )}
             <form onSubmit={handleSend}>
-              <RiEmojiStickerLine
-                width={20}
-                height={20}
-                onClick={() => setEmojiPicker((prev) => !prev)}
-                style={{
-                  cursor: "pointer",
-                }}
-              />
               <input
                 type="text"
                 placeholder="Type a message..."
