@@ -16,6 +16,7 @@ import { v4 as uuid } from "uuid";
 import { RiEmojiStickerLine } from "react-icons/ri";
 import EmojiPicker from "emoji-picker-react";
 import TimeStamp from "../TimeStamp/TimeStamp";
+import { IoMdSend } from "react-icons/io";
 
 const Chat = () => {
   const emojiRef = useRef(null);
@@ -238,7 +239,9 @@ const Chat = () => {
                 accept="*"
                 onChange={(e) => setFile(e.target.files[0])}
               />
-              <button type="submit">Send</button>
+              <button type="submit" className={styles.btn}>
+                <IoMdSend />
+              </button>
             </form>
           </div>
         </div>

@@ -90,6 +90,7 @@
 
 .footer {
   position: relative;
+  border: 1px solid var(--border-color);
 }
 
 .footer > form {
@@ -116,9 +117,23 @@
   background-color: var(--secondary-bg);
 }
 
-.footer > form > button {
+/* .footer > form > button {
   flex: 1;
   margin: 10px;
+} */
+
+.btn {
+  cursor: pointer;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* background-color: transparent; */
+}
+
+.btn > svg {
+  width: 24px;
+  height: 24px;
 }
 
 .preview {
@@ -170,5 +185,10 @@
 
   .imgMsg > img {
     max-width: 100%;
+  }
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
